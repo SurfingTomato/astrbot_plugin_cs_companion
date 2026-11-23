@@ -1,0 +1,16 @@
+name: astrbot_plugin_cs_player
+display_name: 选手簿
+version: 1.0.0
+author: local
+repo: https://liquipedia.net/counterstrike
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+desc: 看比赛时认人用。选手卡（真名/国籍/年龄/位置/当前队伍/换队履历）、首发五人+教练（国籍/入队日期/在队时长/谁是指挥/磨合情况）、近期人员进出。数据来自 Liquipedia，只回答"这人是谁、在队多久"，不含任何比赛数据，也不许编。
+short_desc: 选手卡 / 首发名单 / 近期换人

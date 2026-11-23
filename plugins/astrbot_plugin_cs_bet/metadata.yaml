@@ -1,0 +1,16 @@
+name: astrbot_plugin_cs_bet
+display_name: 打赌台
+version: 1.0.0
+author: local
+repo: https://app.5eplay.com
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+desc: 赛前用真实赔率开盘（胜负/大比分/是否加时），双方各押一注，赛后按真实赛果自动结算，累计积分与连胜，另带彩头账本。让她能跟你抬杠，而不是只会加油。
+short_desc: 押注、结算、连胜、彩头账本

@@ -1,0 +1,16 @@
+name: astrbot_plugin_cs_review
+display_name: 复盘台
+version: 1.0.0
+author: local
+repo: https://app.5eplay.com
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+desc: 赛后逐人复盘。用 5Eplay 的 session_info 拿每张图每队五人的 K-D-A、ADR、KAST、评分、首杀差、多杀、回合 MVP，折成整场合计后按写死的规则判定「扛把子 / 悲情英雄 / 背锅位 / 隐身」。判据会一起打印出来，能对得上账。
+short_desc: 逐人数据 + 谁背锅（有判据）

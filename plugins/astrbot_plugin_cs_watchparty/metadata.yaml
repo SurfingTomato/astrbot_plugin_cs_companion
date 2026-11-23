@@ -1,0 +1,16 @@
+name: astrbot_plugin_cs_watchparty
+display_name: 陪看台
+version: 1.1.0
+author: local
+repo: https://app.5eplay.com
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+desc: 把「正在看的那场」变成持续状态：锁定比赛、记录她的临场判断、每轮自动注入真实比分与赛点；图与图之间的空档她先开口抛一句（短句推送，素材只来自真实比分+固定常识卡池）；结束后存一份看球小结。
+short_desc: 锁一场比赛，比分进上下文，图间她先开口

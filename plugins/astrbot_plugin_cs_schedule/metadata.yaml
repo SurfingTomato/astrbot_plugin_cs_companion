@@ -1,0 +1,16 @@
+name: astrbot_plugin_cs_schedule
+display_name: 赛程簿
+version: 1.0.0
+author: local
+repo: https://app.5eplay.com
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+desc: 往前看（未来赛程，含 TBD 占位）、往后看（历史赛果与真实统计：地图胜率/回合差/场均击杀/KD）、以及按瑞士轮规则推演积分榜与下一轮配对。胜率估算以赔率为先、战绩为辅，全部标注"估算"。
+short_desc: 未来赛程 / 历史统计 / 瑞士轮推演

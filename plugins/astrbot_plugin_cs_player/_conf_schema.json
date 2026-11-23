@@ -1,0 +1,17 @@
+{
+  "contact": {
+    "type": "string",
+    "default": "you@example.com",
+    "description": "Liquipedia API 要求 User-Agent 里带真实联系方式（邮箱或主页）。请改成自己的，否则可能被限流。"
+  },
+  "default_team": {
+    "type": "string",
+    "default": "FaZe Clan",
+    "description": "/roster 不带参数时默认看哪支队"
+  },
+  "cache_days": {
+    "type": "int",
+    "default": 7,
+    "description": "选手卡本地缓存天数（花名册固定 12 小时，转会期更准）"
+  }
+}

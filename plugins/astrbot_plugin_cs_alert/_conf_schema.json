@@ -1,0 +1,32 @@
+{
+  "enable_push": {
+    "type": "bool",
+    "description": "打开后她会主动发消息（开赛前/开打/图结束/赛点/结束）。关闭时只默默记录，供 cs_alert_recent 查询。",
+    "default": false
+  },
+  "push_umo": {
+    "type": "string",
+    "description": "推送到哪个会话（unified_msg_origin）。私聊形如 platform:FriendMessage:123456789",
+    "default": ""
+  },
+  "lead_minutes": {
+    "type": "int",
+    "description": "开赛前多少分钟提醒",
+    "default": 15
+  },
+  "only_major": {
+    "type": "bool",
+    "description": "只盯 Major 级别赛事。关掉会连 CCT 预选赛一起提醒，一天可能十几条。",
+    "default": true
+  },
+  "watch_teams": {
+    "type": "list",
+    "description": "必盯的队名（小写，逗号分隔）。填了之后这些队的比赛不受 only_major 限制。",
+    "default": ["faze", "liquid", "lvg", "9z", "heroic", "nip"]
+  },
+  "max_pushes_per_hour": {
+    "type": "int",
+    "description": "每小时最多推几条，防刷屏",
+    "default": 8
+  }
+}

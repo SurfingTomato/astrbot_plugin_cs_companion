@@ -1,0 +1,22 @@
+{
+  "enable_gap_push": {
+    "type": "bool",
+    "description": "图与图之间（一张图刚打完、下一张还没开）主动发一句短话。关掉则只能用 cs_gap_talk 取素材。",
+    "default": true
+  },
+  "gap_umo": {
+    "type": "string",
+    "description": "图间那句发到哪个会话（unified_msg_origin），私聊形如 platform:FriendMessage:123456789",
+    "default": ""
+  },
+  "gap_delay_seconds": {
+    "type": "int",
+    "description": "一张图打完后等多少秒再开口（太早像抢话，太晚就冷场了）",
+    "default": 75
+  },
+  "inject_char_limit": {
+    "type": "int",
+    "description": "每轮注入上下文里的比分段落最多多少字",
+    "default": 320
+  }
+}
