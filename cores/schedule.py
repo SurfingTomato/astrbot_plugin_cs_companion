@@ -342,6 +342,12 @@ class CsSchedule:
 
         用户问"明天几点开始""接下来有什么""这届赛程怎么排"时调用。
         瑞士轮后续轮次在赛前只显示 TBD vs TBD，这是正常的占位，不要说成大问题。
+        返回里标题写了"已确定对阵 N 场"：这 N 场必须全部列给用户（几点、谁打谁），
+        不能只挑其中一两场就总结成"就这几场"。
+
+        重要：赛程是实时数据，随时会补队名、改时间。即使用户重复问同一个问题、
+        即使对话记录里你刚才已经回答过、即使记得自己查过，也必须重新调用本工具，
+        绝不能凭旧回答或记忆复述。用户再问一次通常意味着上次答得不对。
 
         Args:
             days(number): 看几天，默认 3，最大 14
@@ -377,31 +383,43 @@ class CsSchedule:
 
         rows.sort(key=lambda m: m["plan_ts"])
         multi = len({m["event"] for m in rows}) > 1
+        # 已定对阵和 TBD 占位分开处理：占位几十场会把真实对阵淹掉，模型容易只挑一两场讲
+        decided = [m for m in rows if not tbd(m)]
+        pending = [m for m in rows if tbd(m)]
+
         by_day: dict[str, list[str]] = {}
-        for m in rows:
+        tbd_day: dict[str, int] = {}
+        for m in decided:
             day = hhmm(m["plan_ts"])[:5]
             tag = ""
             if multi:
                 # 同一届赛事的两个阶段名字不一样，单看"第一轮"会分不清是哪一阶段
                 tag = "［" + m["event"].replace("PGL 新加坡 Major 2026", "").strip() + "］"
-            if tbd(m):
-                line = f"　{hhmm(m['plan_ts'])[6:]} {m['stage'] or m['round']}　对阵未定（TBD）{tag}"
-            else:
-                odds = f"　{m['o1']}%/{m['o2']}%" if m["o1"] and m["o2"] else ""
-                extra = f"　[{m['tags']}]" if m["tags"] else ""
-                line = (
-                    f"　{hhmm(m['plan_ts'])[6:]} {m['t1']} vs {m['t2']}"
-                    f"　BO{m['bo']}　{m['stage'] or m['round']}{odds}{extra}{tag}"
-                )
+            odds = f"　{m['o1']}%/{m['o2']}%" if m["o1"] and m["o2"] else ""
+            extra = f"　[{m['tags']}]" if m["tags"] else ""
+            line = (
+                f"　{hhmm(m['plan_ts'])[6:]} {m['t1']} vs {m['t2']}"
+                f"　BO{m['bo']}　{m['stage'] or m['round']}{odds}{extra}{tag}"
+            )
             by_day.setdefault(day, []).append(line)
+        for m in pending:
+            day = hhmm(m["plan_ts"])[:5]
+            by_day.setdefault(day, [])
+            tbd_day[day] = tbd_day.get(day, 0) + 1
 
-        out = [f"【{name}·未来 {days} 天】"]
+        out = [f"【{name}·未来 {days} 天】共 {len(rows)} 场，其中已确定对阵 {len(decided)} 场"]
         for day in sorted(by_day):
             out.append(day)
-            out.extend(by_day[day][:14])
-            if len(by_day[day]) > 14:
-                out.append(f"　…还有 {len(by_day[day]) - 14} 场")
-        out.append("（TBD 是赛前占位，等上一轮打完才会填队名。别把 TBD 说成队伍。）")
+            out.extend(by_day[day])
+            if tbd_day.get(day):
+                out.append(f"　另有 {tbd_day[day]} 场对阵未定（TBD，等上一轮打完才填队名）")
+        if decided:
+            out.append(
+                f"（上面 {len(decided)} 场都是已经排好队名的真实对阵，讲的时候必须一场不漏地列全，"
+                "别只说开头一两场就下'只有两场'的结论；只有 TBD 那些才算未定。）"
+            )
+        else:
+            out.append("（这批全是赛前占位，还没出队名。别把 TBD 说成队伍。）")
         return "\n".join(out)
 
     async def cs_history(self, event: AstrMessageEvent, team: str, days: int = 12, limit: int = 8) -> str:
