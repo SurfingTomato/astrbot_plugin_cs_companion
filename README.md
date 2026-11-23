@@ -1,6 +1,8 @@
-# cs-major-companion
+# astrbot_plugin_cs_companion
 
-**给你的 AstrBot 陪伴角色装一套「看 CS 比赛」的能力。** 六个插件、22 个工具，围绕一件事：
+**让你的大肥鱼能陪你看 CS 比赛。**
+
+六个插件、22 个工具，围绕一件事：
 让她在你旁边看比赛时**说得上话，而且不编数据**。
 
 > Companion plugins for [AstrBot](https://github.com/AstrBotDevs/AstrBot) that let a chat persona
@@ -52,8 +54,8 @@
 
 ```bash
 cd <AstrBot 数据目录>/data/plugins
-git clone https://github.com/<you>/cs-major-companion.git
-cp -r cs-major-companion/plugins/* .
+git clone https://github.com/<you>/astrbot_plugin_cs_companion.git
+cp -r astrbot_plugin_cs_companion/plugins/* .
 ```
 
 然后在面板（默认 `127.0.0.1:6185`）→ 插件管理 → 刷新 → 勾选这六个 → 重载。
