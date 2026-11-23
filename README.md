@@ -2,25 +2,56 @@
 
 **让你的大肥鱼能陪你看 CS 比赛。**
 
-六个插件、22 个工具，围绕一件事：
-让她在你旁边看比赛时**说得上话，而且不编数据**。
+六个插件、22 个工具，围绕一件事：让她在你旁边看比赛时**说得上话，而且不编数据**。
 
 > Companion plugins for [AstrBot](https://github.com/AstrBotDevs/AstrBot) that let a chat persona
 > follow a CS2 tournament with you: live score injection, match-day radar, bet ledger,
 > schedule/stat queries, player cards, and a post-match review that names a scapegoat with reasons.
 > All data is sourced from **5Eplay** and **Liquipedia** — nothing is guessed.
 
+`AstrBot 4.13+` · `Python ≥ 3.10` · `MIT`
+
 ---
 
-## 为什么会有这个东西
+## 快速开始
 
-看比赛时，AI 陪伴最容易犯三种错：
+### 1. 装进去
 
-1. **不知道比分**，你一问她就开始播报，或者干脆编一句"现在好像 7:5"；
-2. **不知道谁在打**，全程只会说"加油"，因为队里五个人她一个都不认识；
-3. **赛后乱点人**，"XX 这场太菜了"——而她根本没有任何一个人的数据。
+```bash
+cd <AstrBot 数据目录>/data/plugins
+git clone https://github.com/SurfingTomato/astrbot_plugin_cs_companion.git
+cp -r astrbot_plugin_cs_companion/plugins/* .
+```
 
-这套插件的全部设计都围着这三点：**能查的真查，查不到的明说不知道。**
+### 2. 启用
+
+面板（默认 `127.0.0.1:6185`）→ 插件管理 → 刷新 → 勾选这六个 → 重载。
+没有面板就重启一次 AstrBot。
+
+依赖只有 `aiohttp`，AstrBot 自带，不用另装。六个插件彼此独立，只想装一个也不会报错。
+
+### 3. 配两项（不配也能用，但少一半功能）
+
+**① 推送会话 —— `cs_alert`、`cs_watchparty`**
+
+这两个插件会主动发消息，需要 `unified_msg_origin`。配置项名是 `push_umo` / `gap_umo`，
+格式形如 `platform:FriendMessage:123456789`。不填就不会推送（插件仍会记录，可用
+`cs_alert_recent` 查）。
+
+**② Liquipedia 联系方式 —— `cs_player`**
+
+Liquipedia 的 API 条款要求 User-Agent 带**真实联系方式**，并且请求间隔不少于 2 秒。
+`cs_player` 里已经做了 2.2 秒全局限速和 gzip，但 `contact` 这一项需要你改成自己的邮箱：
+
+```json
+{ "contact": "you@example.com" }
+```
+
+留默认占位值能用，但被限流的概率会上升。
+
+### 4. 验证
+
+随便发一句 `今天有什么比赛`，或者直接敲 `/watch`。能看到真实比分的场次列表就通了。
 
 ---
 
@@ -35,7 +66,7 @@
 | `cs_player`<br>选手簿 | 4 | 选手卡（真名 / 国籍 / 年龄 / 位置 / 换队履历）、首发五人 + 教练、近期人员进出、赛前对位 |
 | `cs_review`<br>复盘台 | 2 | 赛后逐人 K-D-A / ADR / KAST / 评分 / 首杀差，按写死的判据判「扛把子 / 悲情英雄 / 背锅位 / 隐身」 |
 
-工具清单：
+全部工具：
 
 ```
 陪看台   cs_watch_start  cs_watch_now  cs_watch_note  cs_watch_end  cs_gap_talk
@@ -50,37 +81,50 @@
 
 ---
 
-## 安装
+## 长什么样
 
-```bash
-cd <AstrBot 数据目录>/data/plugins
-git clone https://github.com/<you>/astrbot_plugin_cs_companion.git
-cp -r astrbot_plugin_cs_companion/plugins/* .
+<!--
+截图位：建议放三张，命名 docs/img/watch.png / alert.png / review.png
+1) /watch 后的对话，展示她带比分说话
+2) 开赛雷达推送（多条合并成一条）
+3) 复盘台输出（带判据）
+放好文件后把下面每段的注释删掉、改成 ![说明](docs/img/xxx.png)
+-->
+
+完整样例见 [examples/sample_output.md](examples/sample_output.md)。
+
+**赛后复盘**（真实数据，2026-11-23 Detonate 2-0 NXG）：
+
+```
+—— NXG（输，图分 0）——
+  ★cow          26-30-7   ADR  84.5  KAST   64%  KD -4  首杀差 +3  评分 1.25  悲情英雄
+   Ounce        22-28-5   ADR  58.5  KAST   56%  KD -6  首杀差 -3  评分 0.96  低迷
+   Galaxy       12-30-10  ADR  56.8  KAST   58%  KD -18 首杀差 -2  评分 0.63  背锅位
+  → 悲情英雄是 cow：26-30、ADR 84、评分 1.25，数据够了但队伍没赢下来
+  → 背锅位是 Galaxy：12-30，评分只有 0.63、KAST 58%（回合参与不够）
 ```
 
-然后在面板（默认 `127.0.0.1:6185`）→ 插件管理 → 刷新 → 勾选这六个 → 重载。
-没有面板就重启一次 AstrBot。
+**赛前对位**：
 
-依赖：`aiohttp`（AstrBot 自带）。Python ≥ 3.10，AstrBot 4.13+。
-
-### 首次必须配的两项
-
-**① 推送会话（`cs_alert`、`cs_watchparty`）**
-
-这两个插件会主动发消息，需要 `unified_msg_origin`。配置项名是 `push_umo` / `gap_umo`，
-格式形如 `platform:FriendMessage:123456789`。不填就不会推送（插件仍会记录，可用
-`cs_alert_recent` 查）。
-
-**② Liquipedia 联系方式（`cs_player`）**
-
-Liquipedia 的 API 条款要求 User-Agent 带**真实联系方式**，并且请求间隔不少于 2 秒。
-`cs_player` 里已经做了 2.2 秒全局限速和 gzip，但 `contact` 这一项需要你改成自己的邮箱：
-
-```json
-{ "contact": "you@example.com" }
+```
+【FaZe】frozen(斯洛伐克)、jcobbb(波兰)、Twistzz(指挥·加拿大)、JBOEN(租借·丹麦)、Neityu(法国)
+  · 平均在队 15 个月，最近加入 3 个月
+【Liquid】NAF(加拿大)、EliGE(美国)、malbsMd(危地马拉)、Jorko(保加利亚)、JT(指挥·南非)
+  · 平均在队 2.3 年  · 近 4 个月离队 2 人：siuhy→astralis、ultimate→apogee
+· 默契：Liquid 平均 2.3 年，FaZe 平均 15 个月，后者的阵容更新。
 ```
 
-留默认占位值能用，但被限流的概率会上升。
+---
+
+## 为什么会有这个东西
+
+看比赛时，AI 陪伴最容易犯三种错：
+
+1. **不知道比分**，你一问她就开始播报，或者干脆编一句"现在好像 7:5"；
+2. **不知道谁在打**，全程只会说"加油"，因为队里五个人她一个都不认识；
+3. **赛后乱点人**，"XX 这场太菜了"——而她根本没有任何一个人的数据。
+
+这套插件的全部设计都围着这三点：**能查的真查，查不到的明说不知道。**
 
 ---
 
@@ -125,33 +169,6 @@ KAST<=60% 且 rating 0.85~1.05                → 隐身
 
 ---
 
-## 长什么样
-
-完整样例见 [examples/sample_output.md](examples/sample_output.md)。
-
-赛后复盘（真实数据，2026-11-23 Detonate 2-0 NXG）：
-
-```
-—— NXG（输，图分 0）——
-  ★cow          26-30-7   ADR  84.5  KAST   64%  KD -4  首杀差 +3  评分 1.25  悲情英雄
-   Ounce        22-28-5   ADR  58.5  KAST   56%  KD -6  首杀差 -3  评分 0.96  低迷
-   Galaxy       12-30-10  ADR  56.8  KAST   58%  KD -18 首杀差 -2  评分 0.63  背锅位
-  → 悲情英雄是 cow：26-30、ADR 84、评分 1.25，数据够了但队伍没赢下来
-  → 背锅位是 Galaxy：12-30，评分只有 0.63、KAST 58%（回合参与不够）
-```
-
-赛前对位：
-
-```
-【FaZe】frozen(斯洛伐克)、jcobbb(波兰)、Twistzz(指挥·加拿大)、JBOEN(租借·丹麦)、Neityu(法国)
-  · 平均在队 15 个月，最近加入 3 个月
-【Liquid】NAF(加拿大)、EliGE(美国)、malbsMd(危地马拉)、Jorko(保加利亚)、JT(指挥·南非)
-  · 平均在队 2.3 年  · 近 4 个月离队 2 人：siuhy→astralis、ultimate→apogee
-· 默契：Liquid 平均 2.3 年，FaZe 平均 15 个月，后者的阵容更新。
-```
-
----
-
 ## 目录结构
 
 ```
@@ -180,6 +197,17 @@ KAST<=60% 且 rating 0.85~1.05                → 隐身
 - `cs_player` 的阵容来自百科快照，转会窗口期间可能滞后；它**不含任何比赛数据**；
 - 复盘台依赖赛后数据落库，刚打完的几分钟内取不到，会自动往前翻到有数据的那一场；
 - 6 个插件是独立可拆的，但 `cs_watchparty` 的图间功能与 `cs_schedule` 的赛程口径一起用时体验最好。
+
+---
+
+## 参与
+
+- 发现某场比赛数据取不到，欢迎开 issue 并附上**赛事链接与时间**，这类问题最好复现；
+- 新玩法（更多图间话题、别的盘口、赛前情报卡）欢迎 PR，**插件之间保持独立**，
+  不要引入跨插件 import；
+- 有两条线请不要动：**liquipedia 的 2.2 秒限速**、**复盘台的判据**。前者是对方的条款，
+  后者是本项目"可对账"的承诺——想改判据可以加配置项，但默认值保留。
+- 提交前跑一遍 `python -m py_compile plugins/*/main.py`，这个仓库不设 CI，靠这个兜底。
 
 ## 致谢
 
