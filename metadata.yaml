@@ -1,0 +1,45 @@
+name: astrbot_plugin_cs_companion
+display_name: CS 赛事陪看
+short_desc: 陪看台 / 打赌台 / 开赛雷达 / 赛程簿 / 选手簿 / 复盘台
+desc: |
+  让陪你看 CS 比赛的那只 AI 真的在场。一个插件，六组能力，22 个工具。
+
+  **陪看台** 锁定正在看的一场：每轮把真实比分、地图进度、赛点注入上下文；
+  图与图之间她会先开口抛一句（素材只来自真实数据与固定常识卡池）；结束后存一份小结。
+
+  **打赌台** 赛前用 5Eplay 的真实赔率开三档盘口（胜负 / 大比分 / 是否加时），
+  双方各押一注，赛后按真实赛果自动结算，累计积分、连胜与彩头账本。
+
+  **开赛雷达** 后台盯赛程，在开赛前 N 分钟、开打、图结束、赛点、比赛结束时捕获事件。
+  默认只记录不打扰，打开推送后她会主动来找你。
+
+  **赛程簿** 未来赛程（含 TBD 占位）、历史赛果与统计（地图胜率 / 回合差 / 场均击杀 / KD）、
+  按瑞士轮规则推演积分榜与下一轮配对。
+
+  **选手簿** 选手卡（真名 / 国籍 / 年龄 / 位置 / 当前队伍 / 换队履历）、首发五人加教练、
+  近期人员进出。数据来自 Liquipedia。
+
+  **复盘台** 赛后逐人复盘：K-D-A、ADR、KAST、评分、首杀差、多杀、回合 MVP，
+  按写死的判据判定「扛把子 / 悲情英雄 / 背锅位 / 隐身」，判据会一起打印出来。
+
+  数据只来自 5Eplay 与 Liquipedia。查不到就说查不到，不猜、不编、不圆场。
+version: 1.0.0
+author: SurfingTomato
+repo: https://github.com/SurfingTomato/astrbot_plugin_cs_companion
+astrbot_version: ">=4.13,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - slack
+  - webchat
+social_link: https://github.com/SurfingTomato
+tags:
+  - 游戏
+  - 娱乐
+  - 工具
+  - cs2
+  - 电竞
+  - 陪看

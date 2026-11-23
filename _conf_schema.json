@@ -1,0 +1,85 @@
+{
+  "watchparty": {
+    "type": "object",
+    "description": "陪看台：锁定正在看的一场，每轮把真实比分塞进上下文。不配也能用。",
+    "items": {
+      "enable_gap_push": {
+        "type": "bool",
+        "description": "图与图之间（一张图刚打完、下一张还没开）主动发一句短话。关掉则只能用 cs_gap_talk 取素材。",
+        "default": true
+      },
+      "gap_umo": {
+        "type": "string",
+        "description": "图间那句发到哪个会话（unified_msg_origin），私聊形如 platform:FriendMessage:123456789。留空则不发。",
+        "default": ""
+      },
+      "gap_delay_seconds": {
+        "type": "int",
+        "description": "一张图打完后等多少秒再开口（太早像抢话，太晚就冷场了）",
+        "default": 75
+      },
+      "inject_char_limit": {
+        "type": "int",
+        "description": "每轮注入上下文里的比分段落最多多少字",
+        "default": 320
+      }
+    }
+  },
+  "alert": {
+    "type": "object",
+    "description": "开赛雷达：开赛前 / 开打 / 图结束 / 赛点 / 结束时主动提醒。默认只记录不打扰。",
+    "items": {
+      "enable_push": {
+        "type": "bool",
+        "description": "打开后她会主动发消息（开赛前/开打/图结束/赛点/结束）。关闭时只默默记录，供 cs_alert_recent 查询。",
+        "default": false
+      },
+      "push_umo": {
+        "type": "string",
+        "description": "推送到哪个会话（unified_msg_origin）。私聊形如 platform:FriendMessage:123456789。留空则不推。",
+        "default": ""
+      },
+      "lead_minutes": {
+        "type": "int",
+        "description": "开赛前多少分钟提醒",
+        "default": 15
+      },
+      "only_major": {
+        "type": "bool",
+        "description": "只盯 Major 级别赛事。关掉会连 CCT 预选赛一起提醒，一天可能十几条。",
+        "default": true
+      },
+      "watch_teams": {
+        "type": "list",
+        "description": "必盯的队名（小写，逗号分隔）。填了之后这些队的比赛不受 only_major 限制。",
+        "default": ["faze", "liquid", "lvg", "9z", "heroic", "nip"]
+      },
+      "max_pushes_per_hour": {
+        "type": "int",
+        "description": "每小时最多推几条，防刷屏",
+        "default": 8
+      }
+    }
+  },
+  "player": {
+    "type": "object",
+    "description": "选手簿：选手卡、首发名单、近期换人。数据来自 Liquipedia。",
+    "items": {
+      "contact": {
+        "type": "string",
+        "description": "Liquipedia API 要求 User-Agent 里带真实联系方式（邮箱或主页）。请改成自己的，否则可能被限流。",
+        "default": "you@example.com"
+      },
+      "default_team": {
+        "type": "string",
+        "description": "/roster 不带参数时默认看哪支队",
+        "default": "FaZe Clan"
+      },
+      "cache_days": {
+        "type": "int",
+        "description": "选手卡本地缓存天数（花名册固定 12 小时，转会期更准）",
+        "default": 7
+      }
+    }
+  }
+}

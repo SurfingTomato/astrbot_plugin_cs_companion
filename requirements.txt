@@ -1,0 +1,2 @@
+# aiohttp 由 AstrBot 运行环境提供，这里只写版本下限，避免重复装。
+aiohttp>=3.9

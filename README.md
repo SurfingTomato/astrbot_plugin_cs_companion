@@ -2,9 +2,9 @@
 
 **让你的大肥鱼能陪你看 CS 比赛。**
 
-六个插件、22 个工具，围绕一件事：让她在你旁边看比赛时**说得上话，而且不编数据**。
+一个插件、六组能力、22 个工具，围绕一件事：让她在你旁边看比赛时**说得上话，而且不编数据**。
 
-> Companion plugins for [AstrBot](https://github.com/AstrBotDevs/AstrBot) that let a chat persona
+> Companion plugin for [AstrBot](https://github.com/AstrBotDevs/AstrBot) that lets a chat persona
 > follow a CS2 tournament with you: live score injection, match-day radar, bet ledger,
 > schedule/stat queries, player cards, and a post-match review that names a scapegoat with reasons.
 > All data is sourced from **5Eplay** and **Liquipedia** — nothing is guessed.
@@ -17,37 +17,40 @@
 
 ### 1. 装进去
 
+从市场装：插件市场搜「CS 赛事陪看」，或右下角提交页填本仓库地址。
+
+手动装（`git clone` 下来的目录名就是插件名，不用再挪）：
+
 ```bash
 cd <AstrBot 数据目录>/data/plugins
 git clone https://github.com/SurfingTomato/astrbot_plugin_cs_companion.git
-cp -r astrbot_plugin_cs_companion/plugins/* .
 ```
 
 ### 2. 启用
 
-面板（默认 `127.0.0.1:6185`）→ 插件管理 → 刷新 → 勾选这六个 → 重载。
+面板（默认 `127.0.0.1:6185`）→ 插件管理 → 刷新 → 打开「CS 赛事陪看」。
 没有面板就重启一次 AstrBot。
 
-依赖只有 `aiohttp`，AstrBot 自带，不用另装。六个插件彼此独立，只想装一个也不会报错。
+依赖只有 `aiohttp`，AstrBot 自带，不用另装。
 
 ### 3. 配两项（不配也能用，但少一半功能）
 
-**① 推送会话 —— `cs_alert`、`cs_watchparty`**
+**① 推送会话** —— 陪看台的图间开口、开赛雷达的主动提醒都要往某个会话发消息，
+需要 `unified_msg_origin`，格式形如 `platform:FriendMessage:123456789`。
+不填就不推送（功能仍在，可以用 `cs_alert_recent` 查）。
 
-这两个插件会主动发消息，需要 `unified_msg_origin`。配置项名是 `push_umo` / `gap_umo`，
-格式形如 `platform:FriendMessage:123456789`。不填就不会推送（插件仍会记录，可用
-`cs_alert_recent` 查）。
-
-**② Liquipedia 联系方式 —— `cs_player`**
-
-Liquipedia 的 API 条款要求 User-Agent 带**真实联系方式**，并且请求间隔不少于 2 秒。
-`cs_player` 里已经做了 2.2 秒全局限速和 gzip，但 `contact` 这一项需要你改成自己的邮箱：
+**② Liquipedia 联系方式** —— 对方 API 条款要求 User-Agent 带**真实联系方式**，
+且请求间隔不少于 2 秒。代码里已经做了 2.2 秒全局限速与 gzip，`contact` 这项要改成你自己的：
 
 ```json
-{ "contact": "you@example.com" }
+{
+  "watchparty": { "gap_umo": "aiocqhttp:FriendMessage:123456789" },
+  "alert":      { "enable_push": true, "push_umo": "aiocqhttp:FriendMessage:123456789" },
+  "player":     { "contact": "you@example.com" }
+}
 ```
 
-留默认占位值能用，但被限流的概率会上升。
+三个空组（`bet` / `review` / `schedule`）没有配置项，不用管。
 
 ### 4. 验证
 
@@ -55,16 +58,16 @@ Liquipedia 的 API 条款要求 User-Agent 带**真实联系方式**，并且请
 
 ---
 
-## 六个插件
+## 六组能力
 
-| 插件 | 工具数 | 做什么 |
+| 能力 | 工具数 | 做什么 |
 |---|---|---|
-| `cs_watchparty`<br>陪看台 | 5 | 把「正在看的那场」做成持续状态：每轮对话前自动注入真实比分与赛点，记录她的临场判断；图间休息时给她一份可抛的话题素材 |
-| `cs_alert`<br>开赛雷达 | 2 | 后台 60 秒轮询，抓「开赛前 15 分钟 / 开打 / 一张图结束 / 赛点 / 结束」，同批事件合并推送；另有按悬念排序的今日推荐 |
-| `cs_bet`<br>打赌台 | 5 | 用真实赛前赔率开三档盘口（胜负 / 大比分 / 加时），赛后按真实赛果自动结算，累计积分、连胜与彩头 |
-| `cs_schedule`<br>赛程簿 | 4 | 未来赛程（含 TBD 占位）、历史赛果与统计（地图胜率 / 回合差 / 场均击杀 / KD）、瑞士轮推演、胜率估算 |
-| `cs_player`<br>选手簿 | 4 | 选手卡（真名 / 国籍 / 年龄 / 位置 / 换队履历）、首发五人 + 教练、近期人员进出、赛前对位 |
-| `cs_review`<br>复盘台 | 2 | 赛后逐人 K-D-A / ADR / KAST / 评分 / 首杀差，按写死的判据判「扛把子 / 悲情英雄 / 背锅位 / 隐身」 |
+| **陪看台** | 5 | 把「正在看的那场」做成持续状态：每轮对话前自动注入真实比分与赛点，记录她的临场判断；图间休息时给她一份可抛的话题素材，并可按配置先开口 |
+| **开赛雷达** | 2 | 后台 60 秒轮询，抓「开赛前 15 分钟 / 开打 / 一张图结束 / 赛点 / 结束」，同批事件合并推送；另有按悬念排序的今日推荐 |
+| **打赌台** | 5 | 用真实赛前赔率开三档盘口（胜负 / 大比分 / 加时），赛后按真实赛果自动结算，累计积分、连胜与彩头 |
+| **赛程簿** | 4 | 未来赛程（含 TBD 占位）、历史赛果与统计（地图胜率 / 回合差 / 场均击杀 / KD）、瑞士轮推演、胜率估算 |
+| **选手簿** | 4 | 选手卡（真名 / 国籍 / 年龄 / 位置 / 换队履历）、首发五人 + 教练、近期人员进出、赛前对位 |
+| **复盘台** | 2 | 赛后逐人 K-D-A / ADR / KAST / 评分 / 首杀差，按写死的判据判「扛把子 / 悲情英雄 / 背锅位 / 隐身」 |
 
 全部工具：
 
@@ -78,6 +81,27 @@ Liquipedia 的 API 条款要求 User-Agent 带**真实联系方式**，并且请
 ```
 
 指令：`/watch` `/csalert` `/bet` `/sched` `/player` `/roster` `/review`
+
+### 从六个插件的旧版升级
+
+早先这六组能力是六个独立插件（`astrbot_plugin_cs_watchparty` 等），现在合并成一个。
+装新插件后请把旧的那六个**禁用或删掉**，否则 `/watch` 这类指令与 `cs_*` 工具会重名冲突。
+
+运行期数据也换了位置：
+
+```bash
+# 旧：data/plugin_data/astrbot_plugin_cs_watchparty/watch_state.json
+# 新：data/plugin_data/astrbot_plugin_cs_companion/watch_state.json
+
+D=<AstrBot 数据目录>/data/plugin_data
+mkdir -p "$D/astrbot_plugin_cs_companion"
+cp "$D/astrbot_plugin_cs_watchparty/watch_state.json" "$D/astrbot_plugin_cs_companion/" 2>/dev/null
+cp "$D/astrbot_plugin_cs_alert/alert_state.json"      "$D/astrbot_plugin_cs_companion/" 2>/dev/null
+cp "$D/astrbot_plugin_cs_bet/bets.json"               "$D/astrbot_plugin_cs_companion/" 2>/dev/null
+cp "$D/astrbot_plugin_cs_player/player_cache.json"    "$D/astrbot_plugin_cs_companion/" 2>/dev/null
+```
+
+不迁也能用，只是赌局积分、陪看状态和缓存会从零开始。
 
 ---
 
@@ -171,22 +195,48 @@ KAST<=60% 且 rating 0.85~1.05                → 隐身
 
 ## 目录结构
 
+仓库根目录**就是插件本体**（市场按「一个仓库 = 一个插件」收录，`main.py` 与 `metadata.yaml` 必须在根）。
+
 ```
 .
-├── plugins/
-│   ├── astrbot_plugin_cs_watchparty/   # 陪看台（含图间话题）
-│   ├── astrbot_plugin_cs_alert/        # 开赛雷达
-│   ├── astrbot_plugin_cs_bet/          # 打赌台
-│   ├── astrbot_plugin_cs_schedule/     # 赛程簿
-│   ├── astrbot_plugin_cs_player/       # 选手簿
-│   └── astrbot_plugin_cs_review/       # 复盘台
-├── docs/DATA_SOURCES.md                # 接口字段、限速条款、无效路径
-├── examples/sample_output.md           # 真实输出样例
+├── main.py                    # 唯一的 Star 类：30 个带装饰器的转发壳
+├── cores/                     # 六组能力的实现，无装饰器
+│   ├── watchparty.py          # 陪看台（含图间话题与比分注入）
+│   ├── alert.py               # 开赛雷达
+│   ├── bet.py                 # 打赌台
+│   ├── schedule.py            # 赛程簿
+│   ├── player.py              # 选手簿
+│   └── review.py              # 复盘台
+├── metadata.yaml              # 市场元数据
+├── _conf_schema.json          # 分组配置：watchparty / alert / player
+├── logo.png                   # 512×512 市场图标
+├── tools/                     # 构建与验证脚本（不参与运行）
+│   ├── make_cores.py          # plugins/*/main.py → cores/（去装饰器、去 Star 基类）
+│   ├── make_main.py           # 核心类 → 转发壳
+│   ├── make_logo.py           # 画图标
+│   └── verify.py              # 注册表与 schema 一致性校验
+├── plugins/                   # 六个独立插件原始版本，tools/ 的输入，别删
+├── docs/DATA_SOURCES.md       # 接口字段、限速条款、无效路径
+├── examples/sample_output.md  # 真实输出样例
 └── LICENSE
 ```
 
-运行期数据落在 `data/plugin_data/<插件名>/`：`watch_state.json`、`bets.json`、
-`player_cache.json`、`alerts.json`。这些都已在 `.gitignore` 里。
+### 为什么要有 `main.py` 这层转发壳
+
+不是分层洁癖，是 AstrBot 的机制决定的：
+
+- 插件实例的绑定用的是 `get_handlers_by_module_name(metadata.module_path)`，**按 handler
+  定义处的模块路径精确匹配**。装饰器在 import 时就把 handler 记进全局注册表，并记下当时
+  的 `__module__`。写在 `cores/xxx.py` 里的 handler 路径永远对不上插件主模块，等于没注册。
+- 同理，一个模块里 import 多个 `Star` 子类也没用：`star_map` 以 `cls.__module__` 为键，
+  同模块只保留第一个。
+
+所以装饰器全部集中在根目录的 `main.py`，实现留在 `cores/`。转发壳的签名与 docstring 是从
+原插件**逐字复制**的——`@llm_tool` 靠它们生成给模型看的 JSON Schema，改一个字符都会变样。
+`tools/verify.py` 会拿旧版六个插件做基准逐字段比对，改完跑一遍就知道有没有动坏。
+
+运行期数据落在 `data/plugin_data/astrbot_plugin_cs_companion/`：`watch_state.json`、
+`alert_state.json`、`bets.json`、`player_cache.json`。这些都已在 `.gitignore` 里。
 
 ---
 
@@ -196,18 +246,23 @@ KAST<=60% 且 rating 0.85~1.05                → 隐身
   推算出来的，返回值里写明了"这是推算"；
 - `cs_player` 的阵容来自百科快照，转会窗口期间可能滞后；它**不含任何比赛数据**；
 - 复盘台依赖赛后数据落库，刚打完的几分钟内取不到，会自动往前翻到有数据的那一场；
-- 6 个插件是独立可拆的，但 `cs_watchparty` 的图间功能与 `cs_schedule` 的赛程口径一起用时体验最好。
+- 六组能力共用一份配置，键名带组前缀；想单独关掉某组，目前只能靠人格里禁用对应工具。
 
 ---
 
 ## 参与
 
 - 发现某场比赛数据取不到，欢迎开 issue 并附上**赛事链接与时间**，这类问题最好复现；
-- 新玩法（更多图间话题、别的盘口、赛前情报卡）欢迎 PR，**插件之间保持独立**，
-  不要引入跨插件 import；
+- 新玩法（更多图间话题、别的盘口、赛前情报卡）欢迎 PR。改 `cores/` 之后如果动了 handler 的
+  签名或 docstring，记得重新生成转发壳，否则壳和实现对不上；
 - 有两条线请不要动：**liquipedia 的 2.2 秒限速**、**复盘台的判据**。前者是对方的条款，
   后者是本项目"可对账"的承诺——想改判据可以加配置项，但默认值保留。
-- 提交前跑一遍 `python -m py_compile plugins/*/main.py`，这个仓库不设 CI，靠这个兜底。
+- 提交前跑这两条，本仓库不设 CI，靠它们兜底：
+
+```bash
+python -m py_compile main.py cores/*.py
+python tools/verify.py new && python tools/verify.py diff    # 需要 AstrBot 运行环境
+```
 
 ## 致谢
 
